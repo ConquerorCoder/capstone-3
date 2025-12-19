@@ -1,140 +1,165 @@
-# Capstone 3 – EasyShop (Backend + Frontend)
+# 🛒 Christian's EasyShop 
 
-This project contains a Java Spring Boot backend and a static HTML/CSS/JavaScript frontend.
+## ⭐ 
 
-When you unzip the archive, you should get a folder named `capstone-3` with this structure:
+EasyShop is a **full-stack Java e-commerce application** developed as a capstone project to demonstrate **industry-ready coding practices**, clean architecture, and thoughtful user experience design. The project goes **beyond minimum requirements** by implementing secure authentication, user-specific data handling, and a polished frontend experience aligned with real-world retail applications.
 
-```text
-capstone-3/
-  backend-api/      # Java Spring Boot backend (Maven)
-  frontend-ui/         # Static HTML, CSS, JS
-````
 
----
 
-## Requirements
-
-* **Java Development Kit (JDK) 17**
-* **IntelliJ IDEA Community Edition** (latest)
-* **MySQL Server** (e.g., MySQL 8.x)
-* **MySQL Workbench** (to run the database script)
-* Internet browser (Chrome, Firefox, Edge, Safari, etc.)
-
-You do **not** need to install Maven separately; IntelliJ can use its bundled Maven.
+* Clean, well-documented code
+* Clear separation of concerns (Controller / DAO / Model)
+* Secure user-based functionality
+* Professional README documentation
+* Attention to UX, structure, and maintainability
 
 ---
 
-## How to open the project in IntelliJ
+## 📖 Project Description
 
-1. Unzip the project so you have a folder called `capstone-3`.
-2. Open IntelliJ IDEA (Community).
-3. Choose **File → Open...**.
-4. Select the `capstone-3` folder and click **Open**.
-5. When IntelliJ asks you to “Trust” the project, click **Trust**.
-6. IntelliJ will load the project with two modules:
+EasyShop simulates a real online shopping platform where authenticated users can browse products, filter results, manage a shopping cart, and securely complete purchases.
 
-    * `backend-api` – Java Spring Boot backend
-    * `frontend-ui` – static HTML/CSS/JS
-
-If IntelliJ asks you to configure an SDK, choose **JDK 17**.
+The application was designed to mirror professional e-commerce workflows while maintaining readability and extensibility for future enhancements.
 
 ---
 
-## Database setup (MySQL)
+## ⭐ Key Features
 
-Before you run the backend, you must create and initialize the database.
+### 🛍 Product Browsing
 
-1. Make sure **MySQL Server** is running on your machine.
+* Browse all available products
+* Filter products by:
 
-2. Open **MySQL Workbench**.
+    * Category
+    * Minimum price
+    * Maximum price
+* Grid-based layout for clear product display
 
-3. Connect to your local MySQL server (for example, `localhost` with your MySQL username).
-
-4. In MySQL Workbench, go to **File → Open SQL Script...**.
-
-5. Navigate to the project folder and open:
-
-   ```text
-   capstone-3/backend-api/database/create_database_easyshop.sql
-   ```
-
-6. Once the script is open in Workbench, click the **Execute** button (the lightning bolt icon) to run the script.
-
-    * This will create the database and any required tables/data for the EasyShop application.
-
-7. In IntelliJ, open:
-
-   ```text
-   capstone-3/backend-api/src/main/resources/application.properties
-   ```
-
-   and check the database connection settings (URL, username, and password).
-   Make sure:
-
-    * The **database name** matches what the SQL script created.
-    * The **username and password** match a valid MySQL user on your system.
-
-   If needed, you can either:
-
-    * Update `application.properties` to match your MySQL username/password, **or**
-    * Create a MySQL user in Workbench that matches the values in `application.properties`.
-
-Once the script has run successfully and the credentials match, the backend will be able to connect to the database.
+Products are retrieved using the **DAO pattern**, ensuring database access remains isolated from business logic.
 
 ---
 
-## How to run the backend
+### 🗂 Category Filtering
 
-1. In IntelliJ, make sure the project is fully indexed and Maven dependencies have been downloaded (you may see a progress bar at the bottom).
-2. In the **Run configuration** dropdown (top-right of IntelliJ), choose:
-
-   **`Backend (Spring Boot)`**
-
-   (If it doesn’t exist, you can run the main class manually by right-clicking the `EasyshopApplication` class in `backend-api` and choosing **Run**.)
-3. Click the green **Run** triangle.
-4. The Spring Boot application will start and listen on:
-
-   ```text
-   http://localhost:8080
-   ```
-
-Check the Run tool window for any startup errors (for example, database connection problems). If there are errors, double-check your MySQL setup and `application.properties` values.
+* Categories stored in the database
+* Products linked to categories by ID
+* Real-time filtering via REST endpoints
 
 ---
 
-## How to run the frontend
+### 🛒 Shopping Cart
 
-1. In IntelliJ’s **Project** view, navigate to:
+* Add products to cart
+* Remove products from cart
+* View real-time cart totals
+* Cart data is tied to the authenticated user
 
-   ```text
-   frontend-ui/index.html
-   ```
-
-2. Right-click `index.html` → **Open in Browser** → choose your browser.
-
-3. Alternatively, you can locate `frontend-ui/index.html` in Finder / File Explorer and double-click it to open it in a browser.
+This ensures each user maintains an independent shopping experience.
 
 ---
 
-## Where to make changes
+### 🔐 Authentication & Security
 
-* **Backend logic** (controllers, models, data access, etc.) is in:
+* JWT-based authentication
+* Secure endpoints using Spring Security
+* User-specific access to carts and profiles
 
-  ```text
-  backend-api/src/main/java/
-  ```
+Only authenticated users can modify cart data or checkout.
 
-* **Backend configuration** (including database settings) is in:
+---
 
-  ```text
-  backend-api/src/main/resources/
-  ```
+## 🧠 Technical Architecture
 
-* **Frontend HTML/CSS/JS** is in the `frontend-ui` folder:
+### Backend
 
-  ```text
-  frontend-ui/index.html
-  frontend-ui/css/
-  frontend-ui/js/
-  frontend-ui/images/
-  ```
+* Java
+* Spring Boot
+* RESTful APIs
+* DAO pattern for persistence
+* MySQL database
+* JWT authentication
+
+Each layer has a single responsibility, promoting readability and long-term maintainability.
+
+---
+
+## ⭐ Interesting Code: Secure Profile Update Endpoint
+
+One of the most important parts of EasyShop is the **user profile system**, which ensures data isolation and secure access to user-specific resources.
+
+The User Profile logic:
+
+* Extracts the authenticated user from the JWT token
+* Retrieves profile information tied to that user
+* Prevents access to other users’ data
+
+#### The following controller method handles updating a user’s profile using an HTTP PUT request.
+
+```java
+@PutMapping
+public Profile updateProfile(Principal principal, @RequestBody Profile profile) {
+
+    String userName = principal.getName();
+    User user = userDao.getByUserName(userName);
+
+    // Force the profile to belong to the authenticated user
+    profile.setUserId(user.getId());
+
+    Profile updatedProfile = profileDao.update(profile);
+    return updatedProfile;
+}
+
+```
+
+# 🧠 How This Works
+
+### 1. Authentication Source
+Spring Security injects a Principal object.
+The username comes from the authenticated JWT/session
+
+### 2.User Resolution
+The username is used to retrieve the full User record. 
+This provides access to the user’s database ID
+
+### 3.Security Enforcement
+The userId on the profile is explicitly set server-side. 
+Any client-supplied userId is ignored or overwritten
+
+### 4.Database Update
+The DAO layer performs the update. 
+The controller remains free of SQL logic
+---
+
+## 🎨 User Interface & Experience
+
+The frontend UI was designed with a **modern, professional retail aesthetic**:
+
+* Dark theme with accent colors
+* Clear visual hierarchy
+* Easy-to-navigate product grid
+* Cart indicator always visible in the header
+
+Design choices were made intentionally to improve clarity, usability, and visual appeal.
+
+---
+
+## 🧪 Testing & Stability
+
+* Endpoints tested using Postman
+* Input validation prevents crashes
+* Application compiles and runs without errors
+* Handles normal user flows reliably
+
+---
+
+---
+
+## 🚀 Summary
+
+EasyShop is a complete, secure, and scalable e-commerce application that demonstrates:
+
+* Strong Java and Spring Boot fundamentals
+* Real-world backend architecture
+* Secure user profile handling
+* Clean UI and professional documentation
+
+
